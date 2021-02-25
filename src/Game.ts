@@ -3,6 +3,7 @@
 
 // importing createjs framework
 import "createjs";
+
 // importing game constants
 import AssetManager from "./AssetManager";
 import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST } from "./Constants";
@@ -21,18 +22,28 @@ let assetManager:AssetManager;
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
+let tile2:Tile;
 
-    
+let tileArray = new Array(20);
+
+
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
-
+    
     // construct sprites and add to the stage here
     background = assetManager.getSprite("assets","Background");
     stage.addChild(background);
-
-    tile = new Tile(stage, assetManager);
     
+    tile = new Tile(stage, assetManager);
+    tile.positionMe(10,100);
+    tile2 = new Tile(stage, assetManager);
+    tile2.positionMe(120,100);
+    
+    tileArray[0] = Object.assign(Object.create(tile), tile);
+    
+    tileArray[1] = Object.assign(Object.create(Object.getPrototypeOf(tile)), tile);
+    tileArray[1].testNum = 10;
 
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
@@ -49,7 +60,7 @@ function onTick(e:createjs.Event):void {
     // this is the game loop
 
 
-    tile.update();
+    tileArray[1].update();
     // update the stage!
     stage.update();
 }
