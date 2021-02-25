@@ -21,6 +21,7 @@ let assetManager:AssetManager;
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
+
     
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
@@ -31,10 +32,7 @@ function onReady(e:createjs.Event):void {
     stage.addChild(background);
 
     tile = new Tile(stage, assetManager);
-
-
-
-
+    
 
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
@@ -42,13 +40,16 @@ function onReady(e:createjs.Event):void {
     console.log(">> game ready");
 }
 
+
+
 function onTick(e:createjs.Event):void {
     // TESTING FPS
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
 
     // this is the game loop
-    // ...
 
+
+    tile.update();
     // update the stage!
     stage.update();
 }

@@ -10211,6 +10211,7 @@ function onReady(e) {
 }
 function onTick(e) {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
+    tile.update();
     stage.update();
 }
 function main() {
@@ -10239,9 +10240,26 @@ main();
 Object.defineProperty(exports, "__esModule", { value: true });
 class Tile {
     constructor(stage, assetManager) {
-        this._sprite = assetManager.getSprite("assets", "Comp1/Tile", 0, 0);
+        this.spriteClicked = false;
+        this.stage = stage;
+        this._sprite = assetManager.getSprite("assets", "Comp1/Tile", 10, 100);
         stage.addChild(this._sprite);
-        this._sprite.gotoAndPlay("Comp1/Tile");
+        this._sprite.gotoAndStop("Comp 1/Tile");
+    }
+    get sprite() {
+        return this._sprite;
+    }
+    update() {
+        if (this.spriteClicked)
+            return;
+        this.sprite.on("click", () => {
+            console.log("Clicked");
+            this.sprite.gotoAndPlay("Comp 1/Tile");
+            this.sprite.on("animationend", () => {
+                this.spriteClicked = true;
+                this.sprite.stop();
+            });
+        }, this.stage, true);
     }
 }
 exports.default = Tile;
