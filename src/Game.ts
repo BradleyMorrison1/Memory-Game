@@ -22,10 +22,10 @@ let assetManager:AssetManager;
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
-let tile2:Tile;
+
 
 let tileArray = new Array(20);
-
+let numOfTiles:number;
 
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
@@ -35,16 +35,19 @@ function onReady(e:createjs.Event):void {
     background = assetManager.getSprite("assets","Background");
     stage.addChild(background);
     
-    tile = new Tile(stage, assetManager);
-    tile.positionMe(10,100);
-    tile2 = new Tile(stage, assetManager);
-    tile2.positionMe(120,100);
     
-    tileArray[0] = Object.assign(Object.create(tile), tile);
-    
-    tileArray[1] = Object.assign(Object.create(Object.getPrototypeOf(tile)), tile);
-    tileArray[1].testNum = 10;
+    for(let j:number = 0; j < 4; j++)
+    {
+        for(let i:number = 0; i < 5; i++)
+        {
 
+            numOfTiles = tileArray.length - 1;
+            tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[i]);
+            tileArray[numOfTiles].positionMe((10 + j *100), ((100 + 80*i)));
+            tileArray[numOfTiles].update();
+        }
+    }
+    
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
     createjs.Ticker.on("tick", onTick);        
@@ -58,9 +61,9 @@ function onTick(e:createjs.Event):void {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
 
     // this is the game loop
+    
 
 
-    tileArray[1].update();
     // update the stage!
     stage.update();
 }
