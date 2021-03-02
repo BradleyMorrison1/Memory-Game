@@ -10200,23 +10200,40 @@ let data = {};
 let assetManager;
 let background;
 let tile;
+let imageArray = new Array(20);
+let tiles;
 let tileArray = new Array(20);
 let numOfTiles;
 function onReady(e) {
     console.log(">> spritesheet loaded – ready to add sprites to game");
     background = assetManager.getSprite("assets", "Background");
     stage.addChild(background);
+    imageArray[0] = assetManager.getSprite("assets", "triangles");
+    imageArray[1] = assetManager.getSprite("assets", "hexagon");
+    imageArray[2] = assetManager.getSprite("assets", "diamond");
+    imageArray[3] = assetManager.getSprite("assets", "hourGlass");
+    imageArray[4] = assetManager.getSprite("assets", "circle");
+    imageArray[5] = assetManager.getSprite("assets", "circleX");
+    imageArray[6] = assetManager.getSprite("assets", "diamondSquare");
+    imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
+    imageArray[8] = assetManager.getSprite("assets", "square");
+    imageArray[9] = assetManager.getSprite("assets", "pentagon");
+    for (let i = 10; i < 19; i++) {
+        imageArray[i] = imageArray[i - 10];
+    }
     for (let j = 0; j < 4; j++) {
         for (let i = 0; i < 5; i++) {
-            numOfTiles = tileArray.length - 1;
             tileArray[numOfTiles] = Object.assign(tile = new Tile_1.default(stage, assetManager), tileArray[i]);
             tileArray[numOfTiles].positionMe((10 + j * 100), ((100 + 80 * i)));
-            tileArray[numOfTiles].update();
+            tileArray[numOfTiles].update(numOfTiles);
+            stage.on("eventTileSelected", () => { spawnImage(tileArray[numOfTiles]); }, true);
         }
     }
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
     console.log(">> game ready");
+}
+function spawnImage(sprite) {
 }
 function onTick(e) {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
@@ -10246,22 +10263,10 @@ main();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Toolkit_1 = __webpack_require__(/*! ./Toolkit */ "./src/Toolkit.ts");
 class Tile {
     constructor(stage, assetManager) {
-        this.imageArray = new Array(20);
         this.hasBeenClicked = false;
         this.spriteClicked = false;
-        this.imageArray[0] = assetManager.getSprite("assets", "triangles");
-        this.imageArray[1] = assetManager.getSprite("assets", "hexagon");
-        this.imageArray[2] = assetManager.getSprite("assets", "diamond");
-        this.imageArray[3] = assetManager.getSprite("assets", "hourGlass");
-        this.imageArray[4] = assetManager.getSprite("assets", "circle");
-        this.imageArray[5] = assetManager.getSprite("assets", "circleX");
-        this.imageArray[6] = assetManager.getSprite("assets", "diamondSquare");
-        this.imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
-        this.imageArray[8] = assetManager.getSprite("assets", "square");
-        this.imageArray[9] = assetManager.getSprite("assets", "pentagon");
         this.stage = stage;
         this._sprite = assetManager.getSprite("assets", "Comp1/Tile");
         stage.addChild(this._sprite);
@@ -10274,17 +10279,6 @@ class Tile {
         this._sprite.x = x;
         this._sprite.y = y;
     }
-    spawnImage() {
-        let randomNum = Toolkit_1.randomMe(0, 9);
-        let imageNumArray = [0];
-        imageNumArray.push(randomNum);
-        if (randomNum in imageNumArray) {
-            console.log("TEST");
-        }
-        this.stage.addChild(this.imageArray[randomNum]);
-        this.imageArray[randomNum].x = this._sprite.x + 12.5;
-        this.imageArray[randomNum].y = this._sprite.y + 12.5;
-    }
     update() {
         if (this.spriteClicked)
             return;
@@ -10295,72 +10289,13 @@ class Tile {
                 this.sprite.on("animationend", () => {
                     this.spriteClicked = true;
                     this.sprite.stop();
-                    this.spawnImage();
+                    this.stage.dispatchEvent(this.eventTileSelected);
                 }, true);
             }
         }, this.stage, true);
     }
 }
 exports.default = Tile;
-
-
-/***/ }),
-
-/***/ "./src/Toolkit.ts":
-/*!************************!*\
-  !*** ./src/Toolkit.ts ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.pointHit = exports.boxHit = exports.randomMe = void 0;
-function randomMe(low, high) {
-    let randomNum = 0;
-    randomNum = Math.floor(Math.random() * (high - low + 1)) + low;
-    return randomNum;
-}
-exports.randomMe = randomMe;
-function boxHit(sprite1, sprite2) {
-    let width1 = sprite1.getBounds().width;
-    let height1 = sprite1.getBounds().height;
-    let width2 = sprite2.getBounds().width;
-    let height2 = sprite2.getBounds().height;
-    if ((sprite1.x + width1 > sprite2.x) &&
-        (sprite1.y + height1 > sprite2.y) &&
-        (sprite1.x < sprite2.x + width2) &&
-        (sprite1.y < sprite2.y + height2)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-exports.boxHit = boxHit;
-function pointHit(sprite1, sprite2, sprite1HitX = 0, sprite1HitY = 0, stage = null) {
-    if (stage != null) {
-        let markerPoint = sprite1.localToGlobal(sprite1HitX, sprite1HitY);
-        let marker = new createjs.Shape();
-        marker.graphics.beginFill("#FF00EC");
-        marker.graphics.drawRect(0, 0, 4, 4);
-        marker.regX = 2;
-        marker.regY = 2;
-        marker.x = markerPoint.x;
-        marker.y = markerPoint.y;
-        marker.cache(0, 0, 4, 4);
-        stage.addChild(marker);
-    }
-    let point = sprite1.localToLocal(sprite1HitX, sprite1HitY, sprite2);
-    if (sprite2.hitTest(point.x, point.y)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-exports.pointHit = pointHit;
 
 
 /***/ }),
@@ -10372,7 +10307,7 @@ exports.pointHit = pointHit;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! E:\Documents\Game Programming\Memory Game\_boilerplateGame\node_modules\webpack-dev-server\client\index.js?http://localhost:5005 */"./node_modules/webpack-dev-server/client/index.js?http://localhost:5005");
+__webpack_require__(/*! E:\Documents\Game Programming\Memory Game\Memory Game\node_modules\webpack-dev-server\client\index.js?http://localhost:5005 */"./node_modules/webpack-dev-server/client/index.js?http://localhost:5005");
 module.exports = __webpack_require__(/*! ./src/Game.ts */"./src/Game.ts");
 
 

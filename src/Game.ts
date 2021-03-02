@@ -1,13 +1,15 @@
 // createjs typescript definition for TypeScript
 /// <reference path="./../node_modules/@types/createjs/index.d.ts" />
-
 // importing createjs framework
 import "createjs";
-
 // importing game constants
 import AssetManager from "./AssetManager";
 import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST } from "./Constants";
 import Tile from "./Tile";
+import {randomMe} from "./Toolkit"
+
+
+
 // game variables
 let stage:createjs.StageGL;
 let canvas:HTMLCanvasElement;
@@ -22,7 +24,10 @@ let assetManager:AssetManager;
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
+let imageArray = new Array(20);
 
+
+let tiles:Tile[];
 
 let tileArray = new Array(20);
 let numOfTiles:number;
@@ -35,16 +40,33 @@ function onReady(e:createjs.Event):void {
     background = assetManager.getSprite("assets","Background");
     stage.addChild(background);
     
+    // adds all the images for the tiles to an array
+    imageArray[0] = assetManager.getSprite("assets", "triangles");
+    imageArray[1] = assetManager.getSprite("assets", "hexagon");
+    imageArray[2] = assetManager.getSprite("assets", "diamond");
+    imageArray[3] = assetManager.getSprite("assets", "hourGlass");
+    imageArray[4] = assetManager.getSprite("assets", "circle");
+    imageArray[5] = assetManager.getSprite("assets", "circleX");
+    imageArray[6] = assetManager.getSprite("assets", "diamondSquare");
+    imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
+    imageArray[8] = assetManager.getSprite("assets", "square");
+    imageArray[9] = assetManager.getSprite("assets", "pentagon");
+    for(let i:number = 10; i < 19; i++)
+    {
+        imageArray[i] = imageArray[i-10];
+    }
+
     
     for(let j:number = 0; j < 4; j++)
     {
         for(let i:number = 0; i < 5; i++)
         {
 
-            numOfTiles = tileArray.length - 1;
+            
             tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[i]);
             tileArray[numOfTiles].positionMe((10 + j *100), ((100 + 80*i)));
-            tileArray[numOfTiles].update();
+            tileArray[numOfTiles].update(numOfTiles);
+            stage.on("eventTileSelected", () => {spawnImage(tileArray[numOfTiles])},true);
         }
     }
     
@@ -54,6 +76,18 @@ function onReady(e:createjs.Event):void {
     console.log(">> game ready");
 }
 
+function spawnImage(sprite:createjs.Sprite)
+{
+    /*
+    let randomNum:number = (randomMe(0,19));
+    
+    stage.addChild(imageArray[randomNum]);
+    imageArray[randomNum].x = sprite.x + 12.5;
+    imageArray[randomNum].y = sprite.y + 12.5;
+    //imageArray.splice(randomNum, 1);
+    console.log(imageArray[randomNum]);
+    */
+}
 
 
 function onTick(e:createjs.Event):void {
@@ -61,8 +95,6 @@ function onTick(e:createjs.Event):void {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
 
     // this is the game loop
-    
-
 
     // update the stage!
     stage.update();
