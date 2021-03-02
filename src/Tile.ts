@@ -16,6 +16,8 @@ export default class Tile{
     constructor(stage:createjs.StageGL, assetManager:AssetManager)
     {
         this.stage = stage;
+        this.eventTileSelected = new createjs.Event("tileSelected", true, false);
+
         this._sprite = assetManager.getSprite("assets", "Comp1/Tile");
         stage.addChild(this._sprite);
         this._sprite.gotoAndStop("Comp 1/Tile");
