@@ -20,7 +20,9 @@ let data:object = {}
 
 //assetmanager object
 let assetManager:AssetManager;
- 
+
+twoTilesClicked:createjs.Event;
+
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
@@ -31,8 +33,7 @@ let numOfTiles:number;
 
 let eventRun:boolean = false;
 
-
-let testNum:number = 0;
+export let tilesClicked:number = 0;
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
@@ -48,15 +49,20 @@ function onReady(e:createjs.Event):void {
     imageArray[3] = assetManager.getSprite("assets", "hourGlass");
     imageArray[4] = assetManager.getSprite("assets", "circle");
     imageArray[5] = assetManager.getSprite("assets", "circleX");
-    imageArray[6] = assetManager.getSprite("assets", "diamondSquare");
-    imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
+    imageArray[6] = assetManager.getSprite("assets", "dimondSquare");
+    imageArray[7] = assetManager.getSprite("assets", "octagonCircle");
     imageArray[8] = assetManager.getSprite("assets", "square");
     imageArray[9] = assetManager.getSprite("assets", "pentagon");
-    for(let i:number = 10; i < 20; i++)
-    {
-        imageArray[i] = imageArray[i-10];
-        //console.log(imageArray[i]);
-    }
+    imageArray[10] = assetManager.getSprite("assets", "triangles");
+    imageArray[11] = assetManager.getSprite("assets", "hexagon");
+    imageArray[12] = assetManager.getSprite("assets", "diamond");
+    imageArray[13] = assetManager.getSprite("assets", "hourGlass");
+    imageArray[14] = assetManager.getSprite("assets", "circle");
+    imageArray[15] = assetManager.getSprite("assets", "circleX");
+    imageArray[16] = assetManager.getSprite("assets", "dimondSquare");
+    imageArray[17] = assetManager.getSprite("assets", "octagonCircle");
+    imageArray[18] = assetManager.getSprite("assets", "square");
+    imageArray[19] = assetManager.getSprite("assets", "pentagon");
     
     for(let j:number = 0; j < 4; j++)
     {
@@ -64,16 +70,21 @@ function onReady(e:createjs.Event):void {
         {
             let x:number = (10 + j *100);
             let y:number = (100 + 80*i);
-
+            
+            
             tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[i]);
             tileArray[numOfTiles].positionMe(x, y);
             tileArray[numOfTiles].update(numOfTiles);
             
-            spawnImage(x, y, testNum++);
-            //stage.on("tileSelected", () => { spawnImage(x, y); },true);
+            spawnImage(x, y,);
+
         }
     }
-    
+    stage.on("tileSelected", () => { 
+        tilesClicked += 1;
+        console.log(tilesClicked);
+        eventRun = true;
+     });
     
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
@@ -81,17 +92,23 @@ function onReady(e:createjs.Event):void {
     console.log(">> game ready");
 }
 
-function spawnImage(spriteX:number, spriteY:number, randomNum:number)
+function spawnImage(spriteX:number, spriteY:number,)
 {
-    //if(eventRun) return;
-    //let randomNum:number = (randomMe(0,(imageArray.length)));
-    console.log(testNum)
+    let randomNum:number = (randomMe(0,(imageArray.length-1)));
+
     stage.addChild(imageArray[randomNum]);
-        
+    
     imageArray[randomNum].x = spriteX + 12;
     imageArray[randomNum].y = spriteY + 12;
-    //imageArray.splice(randomNum, 1);
+    imageArray[randomNum].alpha = 1;
+    imageArray.splice(randomNum, 1);
     eventRun = true;
+    
+    /* Debug
+    console.log(randomNum)
+    console.log("Passed X: " +  spriteX + " Passed Y: " +  spriteY)
+    console.log(imageArray[randomNum])
+    */
 }
 
 

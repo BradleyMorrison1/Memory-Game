@@ -1,4 +1,5 @@
 import AssetManager from "./AssetManager";
+import { tilesClicked } from "./Game";
 
 export default class Tile{
     
@@ -45,7 +46,7 @@ export default class Tile{
                     this.spriteClicked = true;
                     this.sprite.stop();
                     this.stage.dispatchEvent(this.eventTileSelected);
-                    console.log("CLICKED");
+                    //console.log("CLICKED");
                 }, true);
             }
         }, this.stage, true);
