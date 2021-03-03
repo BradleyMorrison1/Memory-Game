@@ -10200,16 +10200,17 @@ let canvas;
 let spriteSheet;
 let data = {};
 let assetManager;
-twoTilesClicked: createjs.Event;
+let eventTwoTilesClicked;
 let background;
 let tile;
 var imageArray = new Array(20);
+var checkArray = new Array(20);
 let tileArray = new Array(20);
 let numOfTiles;
-let eventRun = false;
 exports.tilesClicked = 0;
 function onReady(e) {
     console.log(">> spritesheet loaded – ready to add sprites to game");
+    eventTwoTilesClicked = new createjs.Event("twoTilesClicked", true, false);
     background = assetManager.getSprite("assets", "Background");
     stage.addChild(background);
     imageArray[0] = assetManager.getSprite("assets", "triangles");
@@ -10243,9 +10244,12 @@ function onReady(e) {
         }
     }
     stage.on("tileSelected", () => {
-        exports.tilesClicked += 1;
+        ++exports.tilesClicked;
+        if (exports.tilesClicked == 2) {
+            stage.dispatchEvent(eventTwoTilesClicked);
+            exports.tilesClicked = 0;
+        }
         console.log(exports.tilesClicked);
-        eventRun = true;
     });
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
@@ -10257,8 +10261,8 @@ function spawnImage(spriteX, spriteY) {
     imageArray[randomNum].x = spriteX + 12;
     imageArray[randomNum].y = spriteY + 12;
     imageArray[randomNum].alpha = 1;
+    checkArray[randomNum] = imageArray[randomNum];
     imageArray.splice(randomNum, 1);
-    eventRun = true;
 }
 function onTick(e) {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
@@ -10308,6 +10312,9 @@ class Tile {
     update() {
         if (this.spriteClicked)
             return;
+        this.stage.on("twoTilesClicked", () => {
+            this.hasBeenClicked = true;
+        });
         this.sprite.on("click", () => {
             if (!this.hasBeenClicked) {
                 this.hasBeenClicked = true;

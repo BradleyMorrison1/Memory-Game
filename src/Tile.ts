@@ -37,6 +37,10 @@ export default class Tile{
 
     public update():void{
         if(this.spriteClicked) return;
+        this.stage.on("twoTilesClicked", () => {
+            
+            this.hasBeenClicked = true;
+        });
         this.sprite.on("click", () => {
             if(!this.hasBeenClicked)
             {

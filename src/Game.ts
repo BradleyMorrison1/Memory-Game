@@ -21,23 +21,24 @@ let data:object = {}
 //assetmanager object
 let assetManager:AssetManager;
 
-twoTilesClicked:createjs.Event;
+let eventTwoTilesClicked:createjs.Event;
 
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
 var imageArray:createjs.Sprite[] = new Array(20);
+var checkArray:createjs.Sprite[] = new Array(20);
 
 let tileArray = new Array(20);
 let numOfTiles:number;
-
-let eventRun:boolean = false;
 
 export let tilesClicked:number = 0;
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
     
+    eventTwoTilesClicked = new createjs.Event("twoTilesClicked", true, false);
+
     // construct sprites and add to the stage here
     background = assetManager.getSprite("assets","Background");
     stage.addChild(background);
@@ -81,9 +82,14 @@ function onReady(e:createjs.Event):void {
         }
     }
     stage.on("tileSelected", () => { 
-        tilesClicked += 1;
+        ++tilesClicked;
+        if(tilesClicked == 2)
+        {   
+            stage.dispatchEvent(eventTwoTilesClicked);
+            
+            tilesClicked = 0;
+        }
         console.log(tilesClicked);
-        eventRun = true;
      });
     
     // startup the ticker
@@ -101,9 +107,11 @@ function spawnImage(spriteX:number, spriteY:number,)
     imageArray[randomNum].x = spriteX + 12;
     imageArray[randomNum].y = spriteY + 12;
     imageArray[randomNum].alpha = 1;
+
+    checkArray[randomNum] = imageArray[randomNum];
+
     imageArray.splice(randomNum, 1);
-    eventRun = true;
-    
+
     /* Debug
     console.log(randomNum)
     console.log("Passed X: " +  spriteX + " Passed Y: " +  spriteY)
