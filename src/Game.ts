@@ -24,15 +24,16 @@ let assetManager:AssetManager;
 // game objects
 let background:createjs.Sprite;
 let tile:Tile;
-var imageArray:createjs.Sprite[] = new Array(20);
+let imageArray = new Array(20);
+
+
+let tiles:Tile[];
 
 let tileArray = new Array(20);
 let numOfTiles:number;
 
 let eventRun:boolean = false;
 
-
-let testNum:number = 0;
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
@@ -52,11 +53,11 @@ function onReady(e:createjs.Event):void {
     imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
     imageArray[8] = assetManager.getSprite("assets", "square");
     imageArray[9] = assetManager.getSprite("assets", "pentagon");
-    for(let i:number = 10; i < 20; i++)
+    for(let i:number = 10; i < 19; i++)
     {
         imageArray[i] = imageArray[i-10];
-        //console.log(imageArray[i]);
     }
+    
     
     for(let j:number = 0; j < 4; j++)
     {
@@ -66,30 +67,30 @@ function onReady(e:createjs.Event):void {
             let y:number = (100 + 80*i);
 
             tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[i]);
-            tileArray[numOfTiles].positionMe(x, y);
+            tileArray[numOfTiles].positionMe((10 + j *100), ((100 + 80*i)));
             tileArray[numOfTiles].update(numOfTiles);
             
-            spawnImage(x, y, testNum++);
-            //stage.on("tileSelected", () => { spawnImage(x, y); },true);
+            stage.on("tileSelected", () => {spawnImage(x, y)},true);
         }
     }
     
-    
+
+    eventRun = false;
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
     createjs.Ticker.on("tick", onTick);        
     console.log(">> game ready");
 }
 
-function spawnImage(spriteX:number, spriteY:number, randomNum:number)
+function spawnImage(spriteX:number, spriteY:number)
 {
-    //if(eventRun) return;
-    //let randomNum:number = (randomMe(0,(imageArray.length)));
-    console.log(testNum)
+    if(eventRun) return;
+    let randomNum:number = (randomMe(0,19));
+
     stage.addChild(imageArray[randomNum]);
         
-    imageArray[randomNum].x = spriteX + 12;
-    imageArray[randomNum].y = spriteY + 12;
+    imageArray[randomNum].x = spriteX + 12.5;
+    imageArray[randomNum].y = spriteY + 12.5;
     //imageArray.splice(randomNum, 1);
     eventRun = true;
 }

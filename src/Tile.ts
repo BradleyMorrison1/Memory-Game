@@ -45,7 +45,6 @@ export default class Tile{
                     this.spriteClicked = true;
                     this.sprite.stop();
                     this.stage.dispatchEvent(this.eventTileSelected);
-                    console.log("CLICKED");
                 }, true);
             }
         }, this.stage, true);

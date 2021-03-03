@@ -10193,6 +10193,7 @@ __webpack_require__(/*! createjs */ "./node_modules/createjs/builds/1.0.0/create
 const AssetManager_1 = __webpack_require__(/*! ./AssetManager */ "./src/AssetManager.ts");
 const Constants_1 = __webpack_require__(/*! ./Constants */ "./src/Constants.ts");
 const Tile_1 = __webpack_require__(/*! ./Tile */ "./src/Tile.ts");
+const Toolkit_1 = __webpack_require__(/*! ./Toolkit */ "./src/Toolkit.ts");
 let stage;
 let canvas;
 let spriteSheet;
@@ -10200,11 +10201,11 @@ let data = {};
 let assetManager;
 let background;
 let tile;
-var imageArray = new Array(20);
+let imageArray = new Array(20);
+let tiles;
 let tileArray = new Array(20);
 let numOfTiles;
 let eventRun = false;
-let testNum = 0;
 function onReady(e) {
     console.log(">> spritesheet loaded – ready to add sprites to game");
     background = assetManager.getSprite("assets", "Background");
@@ -10219,7 +10220,7 @@ function onReady(e) {
     imageArray[7] = assetManager.getSprite("assets", "octagonCirlce");
     imageArray[8] = assetManager.getSprite("assets", "square");
     imageArray[9] = assetManager.getSprite("assets", "pentagon");
-    for (let i = 10; i < 20; i++) {
+    for (let i = 10; i < 19; i++) {
         imageArray[i] = imageArray[i - 10];
     }
     for (let j = 0; j < 4; j++) {
@@ -10227,20 +10228,23 @@ function onReady(e) {
             let x = (10 + j * 100);
             let y = (100 + 80 * i);
             tileArray[numOfTiles] = Object.assign(tile = new Tile_1.default(stage, assetManager), tileArray[i]);
-            tileArray[numOfTiles].positionMe(x, y);
+            tileArray[numOfTiles].positionMe((10 + j * 100), ((100 + 80 * i)));
             tileArray[numOfTiles].update(numOfTiles);
-            spawnImage(x, y, testNum++);
+            stage.on("tileSelected", () => { spawnImage(x, y); }, true);
         }
     }
+    eventRun = false;
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
     console.log(">> game ready");
 }
-function spawnImage(spriteX, spriteY, randomNum) {
-    console.log(testNum);
+function spawnImage(spriteX, spriteY) {
+    if (eventRun)
+        return;
+    let randomNum = (Toolkit_1.randomMe(0, 19));
     stage.addChild(imageArray[randomNum]);
-    imageArray[randomNum].x = spriteX + 12;
-    imageArray[randomNum].y = spriteY + 12;
+    imageArray[randomNum].x = spriteX + 12.5;
+    imageArray[randomNum].y = spriteY + 12.5;
     eventRun = true;
 }
 function onTick(e) {
@@ -10299,13 +10303,71 @@ class Tile {
                     this.spriteClicked = true;
                     this.sprite.stop();
                     this.stage.dispatchEvent(this.eventTileSelected);
-                    console.log("CLICKED");
                 }, true);
             }
         }, this.stage, true);
     }
 }
 exports.default = Tile;
+
+
+/***/ }),
+
+/***/ "./src/Toolkit.ts":
+/*!************************!*\
+  !*** ./src/Toolkit.ts ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.pointHit = exports.boxHit = exports.randomMe = void 0;
+function randomMe(low, high) {
+    let randomNum = 0;
+    randomNum = Math.floor(Math.random() * (high - low + 1)) + low;
+    return randomNum;
+}
+exports.randomMe = randomMe;
+function boxHit(sprite1, sprite2) {
+    let width1 = sprite1.getBounds().width;
+    let height1 = sprite1.getBounds().height;
+    let width2 = sprite2.getBounds().width;
+    let height2 = sprite2.getBounds().height;
+    if ((sprite1.x + width1 > sprite2.x) &&
+        (sprite1.y + height1 > sprite2.y) &&
+        (sprite1.x < sprite2.x + width2) &&
+        (sprite1.y < sprite2.y + height2)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+exports.boxHit = boxHit;
+function pointHit(sprite1, sprite2, sprite1HitX = 0, sprite1HitY = 0, stage = null) {
+    if (stage != null) {
+        let markerPoint = sprite1.localToGlobal(sprite1HitX, sprite1HitY);
+        let marker = new createjs.Shape();
+        marker.graphics.beginFill("#FF00EC");
+        marker.graphics.drawRect(0, 0, 4, 4);
+        marker.regX = 2;
+        marker.regY = 2;
+        marker.x = markerPoint.x;
+        marker.y = markerPoint.y;
+        marker.cache(0, 0, 4, 4);
+        stage.addChild(marker);
+    }
+    let point = sprite1.localToLocal(sprite1HitX, sprite1HitY, sprite2);
+    if (sprite2.hitTest(point.x, point.y)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+exports.pointHit = pointHit;
 
 
 /***/ }),
