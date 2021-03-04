@@ -20,8 +20,10 @@ let data:object = {}
 
 //assetmanager object
 let assetManager:AssetManager;
+// events
 
 let eventTwoTilesClicked:createjs.Event;
+let eventTilesDontmatch:createjs.Event;
 
 // game objects
 let background:createjs.Sprite;
@@ -31,6 +33,8 @@ var imageArray:createjs.Sprite[] = new Array(20);
 let imageNameArray:string[] = new Array(20);
 
 let tileArray = new Array(20);
+
+// variables
 
 let numOfTiles:number = 0;
 
@@ -48,6 +52,7 @@ function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
     
     eventTwoTilesClicked = new createjs.Event("twoTilesClicked", true, false);
+    eventTilesDontmatch = new createjs.Event("tilesDontMatch", true, false);
 
     // construct sprites and add to the stage here
     background = assetManager.getSprite("assets","Background");
@@ -83,6 +88,7 @@ function onReady(e:createjs.Event):void {
             let x:number = (10 + j *100);
             let y:number = (100 + 80*i);
             
+            spawnImage(x, y,); // move to change order
             
             tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[numOfTiles]);
             tileArray[numOfTiles].positionMe(x, y);
@@ -90,7 +96,6 @@ function onReady(e:createjs.Event):void {
             tileArray[numOfTiles].update(numOfTiles);
             
             
-            spawnImage(x, y,);
             
             numOfTiles++;
         }
@@ -105,12 +110,10 @@ function onReady(e:createjs.Event):void {
             if(timesCheckLoopRun == 0) 
             {
                 firstName = imageNameArray[i];
-                console.log(imageNameArray[i])
             }
             else if(timesCheckLoopRun == 1)
             {
                 secondName = imageNameArray[i];
-                console.log(imageNameArray[i])
                 timesCheckLoopRun;
             }
             //console.log(timesCheckLoopRun)
@@ -144,11 +147,12 @@ function checkTiles(firstTile:string, secondTile:string)
     if(firstName == secondName)
     {
         tilesMatch = true;
-        console.log(tilesMatch);
+        console.log("Shapes Match");
     }
     else 
     {
         tilesMatch = false;
+        stage.dispatchEvent(eventTilesDontmatch);
     }
 }
 
@@ -163,9 +167,6 @@ function spawnImage(spriteX:number, spriteY:number,)
     imageArray[randomNum].alpha = 1;
 
     imageNameArray[incrementingNum] = imageArray[randomNum].currentAnimation;
-
-    //console.log(imageArray[randomNum].currentAnimation);
-    //console.log(imageNameArray[incrementingNum]);
 
     imageArray.splice(randomNum, 1);
 

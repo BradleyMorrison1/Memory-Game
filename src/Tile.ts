@@ -18,9 +18,9 @@ export default class Tile{
         this.stage = stage;
         this.eventTileSelected = new createjs.Event("tileSelected", true, false);
 
-        this._sprite = assetManager.getSprite("assets", "Comp1/Tile");
+        this._sprite = assetManager.getSprite("assets", "Comp 1/TileDown/TileDown");
         stage.addChild(this._sprite);
-        this._sprite.gotoAndStop("Comp 1/Tile");
+        this._sprite.gotoAndStop("Comp 1/TileDown/TileDown");
     }
     // -------------------------------------- Gets/Sets
     get sprite() {
@@ -40,16 +40,26 @@ export default class Tile{
             
             this.hasBeenClicked = true;
         });
+        
+        this.stage.on("tilesDontMatch", () => {
+            console.log("Shapes Don't Match");
+
+            this.sprite.gotoAndPlay("Comp 1/TileDown/TileUp")
+            this.sprite.on("animationend", () => {
+                this.sprite.stop();
+            }, true);
+
+        })
+        
         this.sprite.on("click", () => {
             if(!this.hasBeenClicked)
             {
                 this.hasBeenClicked = true;
-                this.sprite.gotoAndPlay("Comp 1/Tile");
+                this.sprite.gotoAndPlay("Comp 1/TileDown/TileDown");
                 this.sprite.on("animationend", () => {
                     this.spriteClicked = true;
                     this.sprite.stop();
                     this.stage.dispatchEvent(this.eventTileSelected);
-                    //console.log("CLICKED");
                 }, true);
             }
         }, this.stage, true);

@@ -10200,6 +10200,7 @@ let spriteSheet;
 let data = {};
 let assetManager;
 let eventTwoTilesClicked;
+let eventTilesDontmatch;
 let background;
 let tile;
 var imageArray = new Array(20);
@@ -10215,6 +10216,7 @@ let tilesMatch = false;
 function onReady(e) {
     console.log(">> spritesheet loaded – ready to add sprites to game");
     eventTwoTilesClicked = new createjs.Event("twoTilesClicked", true, false);
+    eventTilesDontmatch = new createjs.Event("tilesDontMatch", true, false);
     background = assetManager.getSprite("assets", "Background");
     stage.addChild(background);
     imageArray[0] = assetManager.getSprite("assets", "triangles");
@@ -10241,11 +10243,11 @@ function onReady(e) {
         for (let i = 0; i < 5; i++) {
             let x = (10 + j * 100);
             let y = (100 + 80 * i);
+            spawnImage(x, y);
             tileArray[numOfTiles] = Object.assign(tile = new Tile_1.default(stage, assetManager), tileArray[numOfTiles]);
             tileArray[numOfTiles].positionMe(x, y);
             tileArray[numOfTiles].index = numOfTiles;
             tileArray[numOfTiles].update(numOfTiles);
-            spawnImage(x, y);
             numOfTiles++;
         }
     }
@@ -10253,11 +10255,9 @@ function onReady(e) {
         tileArray[i].sprite.on("click", () => {
             if (timesCheckLoopRun == 0) {
                 firstName = imageNameArray[i];
-                console.log(imageNameArray[i]);
             }
             else if (timesCheckLoopRun == 1) {
                 secondName = imageNameArray[i];
-                console.log(imageNameArray[i]);
                 timesCheckLoopRun;
             }
             ++timesCheckLoopRun;
@@ -10278,10 +10278,11 @@ function onReady(e) {
 function checkTiles(firstTile, secondTile) {
     if (firstName == secondName) {
         tilesMatch = true;
-        console.log(tilesMatch);
+        console.log("Shapes Match");
     }
     else {
         tilesMatch = false;
+        stage.dispatchEvent(eventTilesDontmatch);
     }
 }
 function spawnImage(spriteX, spriteY) {
@@ -10328,9 +10329,9 @@ class Tile {
         this.spriteClicked = false;
         this.stage = stage;
         this.eventTileSelected = new createjs.Event("tileSelected", true, false);
-        this._sprite = assetManager.getSprite("assets", "Comp1/Tile");
+        this._sprite = assetManager.getSprite("assets", "Comp 1/TileDown/TileDown");
         stage.addChild(this._sprite);
-        this._sprite.gotoAndStop("Comp 1/Tile");
+        this._sprite.gotoAndStop("Comp 1/TileDown/TileDown");
     }
     get sprite() {
         return this._sprite;
@@ -10345,10 +10346,17 @@ class Tile {
         this.stage.on("twoTilesClicked", () => {
             this.hasBeenClicked = true;
         });
+        this.stage.on("tilesDontMatch", () => {
+            console.log("Shapes Don't Match");
+            this.sprite.gotoAndPlay("Comp 1/TileDown/TileUp");
+            this.sprite.on("animationend", () => {
+                this.sprite.stop();
+            }, true);
+        });
         this.sprite.on("click", () => {
             if (!this.hasBeenClicked) {
                 this.hasBeenClicked = true;
-                this.sprite.gotoAndPlay("Comp 1/Tile");
+                this.sprite.gotoAndPlay("Comp 1/TileDown/TileDown");
                 this.sprite.on("animationend", () => {
                     this.spriteClicked = true;
                     this.sprite.stop();
