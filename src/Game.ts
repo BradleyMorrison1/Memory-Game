@@ -27,12 +27,22 @@ let eventTwoTilesClicked:createjs.Event;
 let background:createjs.Sprite;
 let tile:Tile;
 var imageArray:createjs.Sprite[] = new Array(20);
-var checkArray:createjs.Sprite[] = new Array(20);
+
+let imageNameArray:string[] = new Array(20);
 
 let tileArray = new Array(20);
-let numOfTiles:number;
 
-export let tilesClicked:number = 0;
+let numOfTiles:number = 0;
+
+let firstName:string = "";
+let secondName:string = "";
+let timesCheckLoopRun = 0;
+
+let incrementingNum:number = 0;
+
+let tilesClicked:number = 0; // remove export
+
+let tilesMatch:boolean = false;
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> spritesheet loaded – ready to add sprites to game");
@@ -54,6 +64,7 @@ function onReady(e:createjs.Event):void {
     imageArray[7] = assetManager.getSprite("assets", "octagonCircle");
     imageArray[8] = assetManager.getSprite("assets", "square");
     imageArray[9] = assetManager.getSprite("assets", "pentagon");
+
     imageArray[10] = assetManager.getSprite("assets", "triangles");
     imageArray[11] = assetManager.getSprite("assets", "hexagon");
     imageArray[12] = assetManager.getSprite("assets", "diamond");
@@ -73,29 +84,72 @@ function onReady(e:createjs.Event):void {
             let y:number = (100 + 80*i);
             
             
-            tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[i]);
+            tileArray[numOfTiles] = Object.assign(tile = new Tile(stage, assetManager), tileArray[numOfTiles]);
             tileArray[numOfTiles].positionMe(x, y);
+            tileArray[numOfTiles].index = numOfTiles;
             tileArray[numOfTiles].update(numOfTiles);
             
+            
             spawnImage(x, y,);
-
+            
+            numOfTiles++;
         }
     }
+    
+    for(let i:number = 0; i < 20; ++i)
+    {
+        //console.log(imageNumArray[i])
+
+        tileArray[i].sprite.on("click", () => {
+            
+            if(timesCheckLoopRun == 0) 
+            {
+                firstName = imageNameArray[i];
+                console.log(imageNameArray[i])
+            }
+            else if(timesCheckLoopRun == 1)
+            {
+                secondName = imageNameArray[i];
+                console.log(imageNameArray[i])
+                timesCheckLoopRun;
+            }
+            //console.log(timesCheckLoopRun)
+            //console.log(firstNum + " " + secondNum)
+            ++timesCheckLoopRun
+        })
+        
+    }
+
+
     stage.on("tileSelected", () => { 
         ++tilesClicked;
         if(tilesClicked == 2)
         {   
+            checkTiles(firstName, secondName);
             stage.dispatchEvent(eventTwoTilesClicked);
             
             tilesClicked = 0;
         }
-        console.log(tilesClicked);
-     });
+    });
     
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
     createjs.Ticker.on("tick", onTick);        
     console.log(">> game ready");
+}
+
+
+function checkTiles(firstTile:string, secondTile:string)
+{
+    if(firstName == secondName)
+    {
+        tilesMatch = true;
+        console.log(tilesMatch);
+    }
+    else 
+    {
+        tilesMatch = false;
+    }
 }
 
 function spawnImage(spriteX:number, spriteY:number,)
@@ -108,15 +162,14 @@ function spawnImage(spriteX:number, spriteY:number,)
     imageArray[randomNum].y = spriteY + 12;
     imageArray[randomNum].alpha = 1;
 
-    checkArray[randomNum] = imageArray[randomNum];
+    imageNameArray[incrementingNum] = imageArray[randomNum].currentAnimation;
+
+    //console.log(imageArray[randomNum].currentAnimation);
+    //console.log(imageNameArray[incrementingNum]);
 
     imageArray.splice(randomNum, 1);
 
-    /* Debug
-    console.log(randomNum)
-    console.log("Passed X: " +  spriteX + " Passed Y: " +  spriteY)
-    console.log(imageArray[randomNum])
-    */
+    incrementingNum++;
 }
 
 

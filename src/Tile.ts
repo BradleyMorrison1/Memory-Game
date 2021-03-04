@@ -1,5 +1,4 @@
 import AssetManager from "./AssetManager";
-import { tilesClicked } from "./Game";
 
 export default class Tile{
     
